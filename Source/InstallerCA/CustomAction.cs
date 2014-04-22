@@ -243,21 +243,24 @@ namespace InstallerCA
             {
                 // determine if office is 32-bit or 64-bit
                 RegistryKey rkBitness = Registry.LocalMachine.OpenSubKey(@"Software\Microsoft\Office\" + szOfficeVersionKey + @"\Outlook", false);
-                object oBitValue = rkBitness.GetValue("Bitness");
-                if (oBitValue != null)
+                if (rkBitness != null)
                 {
-                    if (oBitValue.ToString() == "x64")
+                    object oBitValue = rkBitness.GetValue("Bitness");
+                    if (oBitValue != null)
                     {
-                        szXllToRegister = szXll64Name;
+                        if (oBitValue.ToString() == "x64")
+                        {
+                            szXllToRegister = szXll64Name;
+                        }
+                        else
+                        {
+                            szXllToRegister = szXll32Name;
+                        }
                     }
                     else
                     {
                         szXllToRegister = szXll32Name;
                     }
-                }
-                else
-                {
-                    szXllToRegister = szXll32Name;
                 }
             }
             else
