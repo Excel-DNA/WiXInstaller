@@ -18,6 +18,10 @@
     <MediaTemplate EmbedCab="yes" />
     <MajorUpgrade Schedule="afterInstallInitialize" DowngradeErrorMessage="A newer version of [ProductName] is already installed." AllowSameVersionUpgrades="yes" />
 
+    <WixVariable Id="WixUIBannerBmp" Value="Resources\Banner.jpg" />
+    <WixVariable Id="WixUIDialogBmp" Value="Resources\Dialog.jpg" />
+    <WixVariable Id="WixUILicenseRtf" Value="Resources\EULA.rtf" />
+
     <!-- Windows Installer set TARGETDIR to the local hard drive with the most free space.  The top-level Directory must be Id="TARGETDIR" Name="SourceDir" -->
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFilesFolder">
