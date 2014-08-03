@@ -54,7 +54,7 @@ namespace InstallerCA
 
                             RegistryKey rkExcelXll = Registry.CurrentUser.OpenSubKey(szKeyName, true);
 
-                            if (rkExcelXll != null)
+                            if (szXllToRegister != string.Empty && rkExcelXll != null)
                             {
                                 string[] szValueNames = rkExcelXll.GetValueNames();
                                 bool bIsOpen = false;
@@ -241,7 +241,10 @@ namespace InstallerCA
             if (nVersion >= 14)
             {
                 // determine if office is 32-bit or 64-bit
-                RegistryKey rkBitness = Registry.LocalMachine.OpenSubKey(@"Software\Microsoft\Office\" + szOfficeVersionKey + @"\Outlook", false);
+            	RegistryKey localMachineRegistry = // 64bit machines need to determine correct hive.
+            		RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, 
+                        Environment.Is64BitOperatingSystem ? RegistryView.Registry64 : RegistryView.Registry32);
+                RegistryKey rkBitness = localMachineRegistry.OpenSubKey(@"Software\Microsoft\Office\" + szOfficeVersionKey + @"\Outlook", false);
                 if (rkBitness != null)
                 {
                     object oBitValue = rkBitness.GetValue("Bitness");
