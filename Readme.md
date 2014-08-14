@@ -7,9 +7,12 @@ To use this, you will need Visual Studio, and to install the WiX toolset: https:
 
 Some of the WiX project files also need unique Guids to be inserted for your project.
 
-WARNING: I have not been able to make a working installer based on this project. I publish it in the hope that it might still be useful as a starting point, and to invite contributions to improve the installer template.
-
+Version for making a Local Machine installer using Active Setup
 ---
 
-Govert van Drimmelen
-30 January 2014
+Benoit Patra has created a version of the Excel-DNA WiX installer that uses the Active Setup feature in Windows to install for all users. The repository is here: https://github.com/bpatra/ExcelDNAWixInstallerLM and a very detailed write-up here: http://benoitpatra.com/2014/07/26/a-sample-wix-installer-using-the-activesetup-feature/
+
+Any help to merge the installers, making the per-user or per-machine installations an installation option, would be greatly appreciated.
+
+
+
