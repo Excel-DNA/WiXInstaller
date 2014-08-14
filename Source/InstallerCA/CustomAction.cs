@@ -264,6 +264,10 @@ namespace InstallerCA
                         szXllToRegister = szXll32Name;
                     }
                 }
+                else
+                {
+                    szXllToRegister = szXll32Name;
+                }
             }
             else
             {
