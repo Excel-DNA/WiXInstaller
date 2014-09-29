@@ -3,18 +3,20 @@
 <?define ProductUpgradeCode = "{Generate a GUID}"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
      xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
-  <Product Id="*" Name="Product Name" 
-           Language="1033"
+  <Product Id="*" Name="!(loc.ProductName)" 
+           Language="!(loc.LANG)"
            Version="$(var.ProductVersion)" 
-           Manufacturer="Company Name" 
+           Manufacturer="!(loc.ProductManufacturer)" 
            UpgradeCode="$(var.ProductUpgradeCode)">
+    
     <Package InstallerVersion="200" 
              Compressed="yes" 
              InstallPrivileges="elevated" 
              InstallScope="perUser" 
-             Manufacturer="Company Name" 
-             Description="Installer for Excel Add-In"
-             Comments="(c) 2013 My Company"/>
+             Manufacturer="!(loc.ProductManufacturer)" 
+             Description="!(loc.ProductDescription)"
+             Comments="!(loc.ProductCopyright)"/>
+    
     <MediaTemplate EmbedCab="yes" />
     <MajorUpgrade Schedule="afterInstallInitialize" DowngradeErrorMessage="A newer version of [ProductName] is already installed." AllowSameVersionUpgrades="yes" />
 
@@ -22,64 +24,42 @@
     <WixVariable Id="WixUIDialogBmp" Value="Resources\Dialog.jpg" />
     <WixVariable Id="WixUILicenseRtf" Value="Resources\EULA.rtf" />
 
+
+    <!-- ICONS -->
+    <Icon Id="ProductIcon" SourceFile="Resources\Icon.ico" />
+    <Property Id="ARPPRODUCTICON" Value="ProductIcon" />
+
     <!-- Windows Installer set TARGETDIR to the local hard drive with the most free space.  The top-level Directory must be Id="TARGETDIR" Name="SourceDir" -->
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFilesFolder">
         <Directory Id="COMPANYDIR" Name="Company Directory" />
       </Directory>
       <Directory Id="AppDataFolder">
-        <Directory Id="Microsoft" Name="Microsoft">
-          <Directory Id="AddIns" Name="AddIns">
+        <Directory Id="COMPANYAPPDATADIR" Name="!(loc.ProductManufacturer)">
+          <!-- !! THIS ID IS USED IN THE CUSTOM ACTION SO DO NOT CHANGE IT -->
+          <Directory Id="AddinFolder" Name="!(loc.ProductName)">
           </Directory>
         </Directory>
       </Directory>
     </Directory>
 
-    <!-- 
-    Components always have unique GUIDs so that Windows can track every file installed. This information is stored in the registry.
-    Components should only contain a single file. KeyPath files will be replaced if missing by the repair button on the installer.
-    -->
-    <ComponentGroup Id="XLLDistributables">
-      <Component Id="XLL32" Guid="{Generate a GUID}" Directory="AddIns">
-        <RegistryValue Root="HKCU" Key="Software\Company Name\Excel Add-In" Name="Xll32Bit" Value="AddIns" KeyPath="yes" Type="string" />
-
-        <File Id="EXCELXLL32PACKED.XLL" Name="ExcelXLL32Packed.xll" Source="Path to 32 bit packed xll" >
-          <netfx:NativeImage Id="ngen_32Xll" Platform="32bit" Priority="0"/>
-        </File>
-      </Component>
-      <Component Id="XLL64" Guid="{Generate a GUID}" Directory="AddIns">
-        <RegistryValue Root="HKCU" Key="Software\Company Name\Excel Add-In" Name="Xll64Bit" Value="AddIns" KeyPath="yes" Type="string" />
-
-        <File Id="EXCELXLL64PACKED.XLL" Name="ExcelXLL64Packed.xll" Source="Path to 64 bit packed xll" >
-          <netfx:NativeImage Id="ngen_64Xll" Platform="64bit" Priority="0"/>
-        </File>
-        <RemoveFile On="uninstall" Id="XLL32" Directory="AddIns" Name="ExcelXLL32Packed.xll" />
-        <RemoveFile On="uninstall" Id="XLL64" Directory="AddIns" Name="ExcelXLL64Packed.xll" />
-        <RemoveFolder Id="AddIns" Directory="AddIns" On="uninstall" />
-        <RemoveFolder Id="Microsoft" Directory="Microsoft" On="uninstall" />
-      </Component>
-    </ComponentGroup>
-    
     <!-- There must be a feature in the project and all components must be installed into the feature to be installed. -->
-    <Feature Id="ExcelAddIn" Title="Feature Name" Description="Description of feature" Level="1" AllowAdvertise="no">
+    <Feature Id="ExcelAddIn" Title="!(loc.ProductName)" Description="!(loc.ProductDescription)" Level="1" AllowAdvertise="no">
       <ComponentGroupRef Id="XLLDistributables"/>
     </Feature>
 
     <PropertyRef Id="NETFRAMEWORK40CLIENT" />
     <Condition Message="[ProductName] requires .NET Framework 4.0.">Installed OR NETFRAMEWORK40CLIENT</Condition>
     <UI Id="UI">
-      <!-- See http://wix.sourceforge.net/manual-wix3/WixUI_index.htm for more information-->
-      <!-- The following line adds the minimal WiX Dialog set to the install -->
+       <!--See http://wix.sourceforge.net/manual-wix3/WixUI_index.htm for more information
+       The following line adds the minimal WiX Dialog set to the install--> 
       <UIRef Id="WixUI_Minimal"/>
     </UI>
-    <Property Id="ARPPRODUCTICON" Value="Icon.ico"></Property>
-
-
     <!--IMPORTANT ALL MS OFFICE SUPPORTED VERSIONS ARE HERE: Office 2003, 2007, 2010, 2013 Keep it uptodate-->
     <!-- these numbers will be parsed individually in the custom actions with InvariantCulture and NumberStyles.Any -->
     <Property Id="OFFICEREGKEYS" Value="11.0,12.0,14.0,15.0" />
-    <Property Id="XLL32" Value="ExcelXLL32Packed.xll" />
-    <Property Id="XLL64" Value="ExcelXLL64Packed.xll" />
+    <Property Id="XLL32" Value="!(loc.ProductNameNoSpace)32.xll" />
+    <Property Id="XLL64" Value="!(loc.ProductNameNoSpace)64.xll" />
     
     <!-- The property below will disable the repair button. -->
     <!--<Property Id="ARPNOREPAIR" Value="yes" />-->
@@ -95,7 +75,8 @@
     For more information on custom actions, read
     http://www.codeproject.com/Articles/132918/Creating-Custom-Action-for-WIX-Written-in-Managed?fid=1599130&df=90&mpp=25&noise=3&prof=False&sort=Position&view=Quick&spc=Relaxed&select=4131367&fr=1#xx0xx
     -->
-    <Binary Id="InstallerCA.CA.dll" SourceFile="..\InstallerCA\bin\Release\InstallerCA.CA.dll" />
+    
+    <Binary Id="InstallerCA.CA.dll" SourceFile="$(var.InstallerCA.TargetDir)$(var.InstallerCA.TargetName).CA.dll" />
     <CustomAction Id="Action_RegisterAddIn.SetProperty" Return="check" Property="Action_RegisterAddIn" Value="OFFICEREGKEYS=[OFFICEREGKEYS];XLL32=[XLL32];XLL64=[XLL64]" />
     <CustomAction Id="Action_RegisterAddIn" BinaryKey="InstallerCA.CA.dll" DllEntry="CaRegisterAddIn" Return="check" Execute="immediate">
     </CustomAction>
@@ -118,4 +99,32 @@
     </AdminExecuteSequence>
 
   </Product>
+
+  <Fragment>
+    <!-- 
+    Components always have unique GUIDs so that Windows can track every file installed. This information is stored in the registry.
+    Components should only contain a single file. KeyPath files will be replaced if missing by the repair button on the installer.
+    Try using for source: $(var.PROJECTREF.TargetDir)$(var.PROJECTREF.TargetName)-AddIn64-packed.xll
+    -->
+    <ComponentGroup Id="XLLDistributables">
+      <Component Id="XLL32" Guid="{Generate a GUID}" Directory="AddinFolder">
+        <RegistryValue Root="HKCU" Key="Software\!(loc.ProductManufacturer)\Excel Add-In" Name="Xll32Bit" Value="AddIns" KeyPath="yes" Type="string" />
+
+        <File Id="EXCELXLL32PACKED.XLL" Name="!(loc.ProductNameNoSpace)32.xll" Source="Path to 32 bit packed xll" >
+          <netfx:NativeImage Id="ngen_32Xll" Platform="32bit" Priority="0"/>
+        </File>
+      </Component>
+      <Component Id="XLL64" Guid="{Generate a GUID}" Directory="AddinFolder">
+        <RegistryValue Root="HKCU" Key="Software\!(loc.ProductManufacturer)\Excel Add-In" Name="Xll64Bit" Value="AddIns" KeyPath="yes" Type="string" />
+
+        <File Id="EXCELXLL64PACKED.XLL" Name="!(loc.ProductNameNoSpace)64.xll" Source="Path to 64 bit packed xll" >
+          <netfx:NativeImage Id="ngen_64Xll" Platform="64bit" Priority="0"/>
+        </File>
+        <RemoveFile On="uninstall" Id="XLL32" Directory="AddinFolder" Name="!(loc.ProductNameNoSpace)32.xll" />
+        <RemoveFile On="uninstall" Id="XLL64" Directory="AddinFolder" Name="!(loc.ProductNameNoSpace)64.xll" />
+        <RemoveFolder Id="AddinFolderRemove" Directory="AddinFolder" On="uninstall" />
+        <RemoveFolder Id="COMPANYAPPDATADIRRemove" Directory="COMPANYAPPDATADIR" On="uninstall" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
 </Wix>

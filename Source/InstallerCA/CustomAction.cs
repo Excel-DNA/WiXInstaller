@@ -22,6 +22,7 @@ namespace InstallerCA
             string szXll32Bit = string.Empty;
             string szXll64Bit = string.Empty;
             string szXllToRegister = string.Empty;
+            string szFolder = string.Empty;
             int nOpenVersion;
             double nVersion;
             bool bFoundOffice = false;
@@ -34,6 +35,10 @@ namespace InstallerCA
                 szOfficeRegKeyVersions = session["OFFICEREGKEYS"];
                 szXll32Bit = session["XLL32"];
                 szXll64Bit = session["XLL64"];
+                szFolder = session["AddinFolder"];
+
+                szXll32Bit = szFolder.ToString() + szXll32Bit.ToString();
+                szXll64Bit = szFolder.ToString() + szXll64Bit.ToString();
 
                 if (szOfficeRegKeyVersions.Length > 0)
                 {
@@ -66,7 +71,7 @@ namespace InstallerCA
                                     // if there are already OPEN keys, determine if our key is installed
                                     if (szValueName.StartsWith("OPEN"))
                                     {
-                                        nOpenVersion = int.TryParse(szValueName.Substring(4), out nOpenVersion) ? nOpenVersion : 0;
+                                        nOpenVersion = int.TryParse(szValueName.Substring(4), NumberStyles.Any, CultureInfo.InvariantCulture, out nOpenVersion) ? nOpenVersion : 0;
                                         int nNewOpen = szValueName == "OPEN" ? 0 : nOpenVersion;
                                         if (nNewOpen > nMaxOpen)
                                         {
@@ -140,6 +145,7 @@ namespace InstallerCA
             string szBaseAddInKey = @"Software\Microsoft\Office\";
             string szXll32Bit = string.Empty;
             string szXll64Bit = string.Empty;
+            string szFolder = string.Empty;
             bool bFoundOffice = false;
             List<string> lstVersions;
 
@@ -150,6 +156,11 @@ namespace InstallerCA
                 szOfficeRegKeyVersions = session["OFFICEREGKEYS"];
                 szXll32Bit = session["XLL32"];
                 szXll64Bit = session["XLL64"];
+                szFolder = session["AddinFolder"];
+
+                szXll32Bit = szFolder.ToString() + szXll32Bit.ToString();
+                szXll64Bit = szFolder.ToString() + szXll64Bit.ToString();
+
 
                 if (szOfficeRegKeyVersions.Length > 0)
                 {
