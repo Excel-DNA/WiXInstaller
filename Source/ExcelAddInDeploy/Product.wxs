@@ -43,31 +43,6 @@
       </Directory>
     </Directory>
 
-    <!-- 
-    Components always have unique GUIDs so that Windows can track every file installed. This information is stored in the registry.
-    Components should only contain a single file. KeyPath files will be replaced if missing by the repair button on the installer.
-    Try using for source: $(var.PROJECTREF.TargetDir)$(var.PROJECTREF.TargetName)-AddIn64-packed.xll
-    -->
-    <ComponentGroup Id="XLLDistributables">
-      <Component Id="XLL32" Guid="{Generate a GUID}" Directory="AddinFolder">
-        <RegistryValue Root="HKCU" Key="Software\!(loc.ProductManufacturer)\Excel Add-In" Name="Xll32Bit" Value="AddIns" KeyPath="yes" Type="string" />
-
-        <File Id="EXCELXLL32PACKED.XLL" Name="!(loc.ProductNameNoSpace)32.xll" Source="Path to 32 bit packed xll" >
-          <netfx:NativeImage Id="ngen_32Xll" Platform="32bit" Priority="0"/>
-        </File>
-      </Component>
-      <Component Id="XLL64" Guid="{Generate a GUID}" Directory="AddinFolder">
-        <RegistryValue Root="HKCU" Key="Software\!(loc.ProductManufacturer)\Excel Add-In" Name="Xll64Bit" Value="AddIns" KeyPath="yes" Type="string" />
-
-        <File Id="EXCELXLL64PACKED.XLL" Name="!(loc.ProductNameNoSpace)64.xll" Source="Path to 32 bit packed xll" >
-          <netfx:NativeImage Id="ngen_64Xll" Platform="64bit" Priority="0"/>
-        </File>
-        <RemoveFile On="uninstall" Id="XLL32" Directory="AddinFolder" Name="!(loc.ProductNameNoSpace)32.xll" />
-        <RemoveFile On="uninstall" Id="XLL64" Directory="AddinFolder" Name="!(loc.ProductNameNoSpace)64.xll" />
-        <RemoveFolder Id="AddinFolderRemove" Directory="AddinFolder" On="uninstall" />
-        <RemoveFolder Id="COMPANYAPPDATADIRRemove" Directory="COMPANYAPPDATADIR" On="uninstall" />
-      </Component>
-    </ComponentGroup>
     <!-- There must be a feature in the project and all components must be installed into the feature to be installed. -->
     <Feature Id="ExcelAddIn" Title="!(loc.ProductName)" Description="!(loc.ProductDescription)" Level="1" AllowAdvertise="no">
       <ComponentGroupRef Id="XLLDistributables"/>
@@ -124,4 +99,32 @@
     </AdminExecuteSequence>
 
   </Product>
+
+  <Fragment>
+    <!-- 
+    Components always have unique GUIDs so that Windows can track every file installed. This information is stored in the registry.
+    Components should only contain a single file. KeyPath files will be replaced if missing by the repair button on the installer.
+    Try using for source: $(var.PROJECTREF.TargetDir)$(var.PROJECTREF.TargetName)-AddIn64-packed.xll
+    -->
+    <ComponentGroup Id="XLLDistributables">
+      <Component Id="XLL32" Guid="{Generate a GUID}" Directory="AddinFolder">
+        <RegistryValue Root="HKCU" Key="Software\!(loc.ProductManufacturer)\Excel Add-In" Name="Xll32Bit" Value="AddIns" KeyPath="yes" Type="string" />
+
+        <File Id="EXCELXLL32PACKED.XLL" Name="!(loc.ProductNameNoSpace)32.xll" Source="Path to 32 bit packed xll" >
+          <netfx:NativeImage Id="ngen_32Xll" Platform="32bit" Priority="0"/>
+        </File>
+      </Component>
+      <Component Id="XLL64" Guid="{Generate a GUID}" Directory="AddinFolder">
+        <RegistryValue Root="HKCU" Key="Software\!(loc.ProductManufacturer)\Excel Add-In" Name="Xll64Bit" Value="AddIns" KeyPath="yes" Type="string" />
+
+        <File Id="EXCELXLL64PACKED.XLL" Name="!(loc.ProductNameNoSpace)64.xll" Source="Path to 64 bit packed xll" >
+          <netfx:NativeImage Id="ngen_64Xll" Platform="64bit" Priority="0"/>
+        </File>
+        <RemoveFile On="uninstall" Id="XLL32" Directory="AddinFolder" Name="!(loc.ProductNameNoSpace)32.xll" />
+        <RemoveFile On="uninstall" Id="XLL64" Directory="AddinFolder" Name="!(loc.ProductNameNoSpace)64.xll" />
+        <RemoveFolder Id="AddinFolderRemove" Directory="AddinFolder" On="uninstall" />
+        <RemoveFolder Id="COMPANYAPPDATADIRRemove" Directory="COMPANYAPPDATADIR" On="uninstall" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
 </Wix>
