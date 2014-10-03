@@ -266,7 +266,39 @@ namespace InstallerCA
                 }
                 else
                 {
-                    szXllToRegister = szXll32Name;
+                    if (Environment.Is64BitOperatingSystem)
+                    {
+                        localMachineRegistry = //64bit machines need to check 32bit registry too!
+                            RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
+                        rkBitness =
+                            localMachineRegistry.OpenSubKey(
+                                @"Software\Microsoft\Office\" + szOfficeVersionKey + @"\Outlook", false);
+                        if (rkBitness != null)
+                        {
+                            var oBitValue = rkBitness.GetValue("Bitness");
+                            if (oBitValue != null)
+                            {
+                                if (oBitValue.ToString() == "x64")
+                                {
+                                    szXllToRegister = szXll64Name;
+                                }
+                                else
+                                {
+                                    szXllToRegister = szXll32Name;
+                                }
+                            }
+                            else
+                            {
+                                szXllToRegister = szXll32Name;
+                            }
+                        }
+                        else
+                        {
+                            szXllToRegister = szXll32Name;
+                        }
+                    }
+                    else
+                        szXllToRegister = szXll32Name;
                 }
             }
             else
