@@ -71,6 +71,8 @@
       <!-- See http://wix.sourceforge.net/manual-wix3/WixUI_index.htm for more information-->
       <!-- The following line adds the minimal WiX Dialog set to the install -->
       <UIRef Id="WixUI_Minimal"/>
+      <!-- This TextStyle is used in the CustonMessages.wxl file -->
+      <TextStyle Id="Black10" FaceName="Tahoma" Size="10" Red="0" Green="0" Blue="0" Bold="yes" />
     </UI>
     <Property Id="ARPPRODUCTICON" Value="Icon.ico"></Property>
 
