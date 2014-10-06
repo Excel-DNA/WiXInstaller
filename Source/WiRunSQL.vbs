@@ -1,3 +1,13 @@
+' This script can be used to update the installer database after it is built - see CustomMessages.wxl for related code.
+' Add a Post-build event to the ExcelAddInDeploy project: 
+' Cscript "{Path to WiRunSQL.vbs}\WiRunSQL.vbs" "$(TargetDir)en-us\$(TargetFileName)" "UPDATE `TextStyle` SET `Color` = 16777215 WHERE `TextStyle` = 'WixUI_Font_Title'"
+' This updates the installer database after it is built and changes the colour of the title text.  Note the use of ` not ' around field names.  Colour value calculated as:
+
+' "65536 * blue + 256 * green + red, where red, green, and blue are each in the range of 0-255. The value must not exceed 16777215, which is the value for white. 
+' The value is 0 for black, 255 for red, 65280 for green, 16711680 for blue and 8421504 for grey. Leaving the field empty specifies the default color." - copied from 
+' http://msdn.microsoft.com/en-ca/library/windows/desktop/aa372074%28v=vs.85%29.aspx  
+' See also, http://stackoverflow.com/questions/17574141/customise-fonts-with-wix-extensions and http://msdn.microsoft.com/en-us/library/windows/desktop/aa368568%28v=vs.85%29.aspx
+
 ' Windows Installer utility to execute SQL statements against an installer database
 ' For use with Windows Scripting Host, CScript.exe or WScript.exe
 ' Copyright (c) Microsoft Corporation. All rights reserved.
