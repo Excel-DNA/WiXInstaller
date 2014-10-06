@@ -54,6 +54,8 @@
        <!--See http://wix.sourceforge.net/manual-wix3/WixUI_index.htm for more information
        The following line adds the minimal WiX Dialog set to the install--> 
       <UIRef Id="WixUI_Minimal"/>
+      <!-- This TextStyle is used in the CustonMessages.wxl file -->
+      <TextStyle Id="Black10" FaceName="Tahoma" Size="10" Red="0" Green="0" Blue="0" Bold="yes" />
     </UI>
     <!--IMPORTANT ALL MS OFFICE SUPPORTED VERSIONS ARE HERE: Office 2003, 2007, 2010, 2013 Keep it uptodate-->
     <!-- these numbers will be parsed individually in the custom actions with InvariantCulture and NumberStyles.Any -->
