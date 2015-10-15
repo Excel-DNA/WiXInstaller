@@ -57,9 +57,9 @@
       <!-- This TextStyle is used in the CustonMessages.wxl file -->
       <TextStyle Id="Black10" FaceName="Tahoma" Size="10" Red="0" Green="0" Blue="0" Bold="yes" />
     </UI>
-    <!--IMPORTANT ALL MS OFFICE SUPPORTED VERSIONS ARE HERE: Office 2003, 2007, 2010, 2013 Keep it uptodate-->
+    <!--IMPORTANT ALL MS OFFICE SUPPORTED VERSIONS ARE HERE: Office 2003, 2007, 2010, 2013, 2016 Keep it uptodate-->
     <!-- these numbers will be parsed individually in the custom actions with InvariantCulture and NumberStyles.Any -->
-    <Property Id="OFFICEREGKEYS" Value="11.0,12.0,14.0,15.0" />
+    <Property Id="OFFICEREGKEYS" Value="11.0,12.0,14.0,15.0,16.0" />
     <Property Id="XLL32" Value="!(loc.ProductNameNoSpace)32.xll" />
     <Property Id="XLL64" Value="!(loc.ProductNameNoSpace)64.xll" />
     
