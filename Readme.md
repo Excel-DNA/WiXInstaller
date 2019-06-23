@@ -3,7 +3,7 @@ Excel-DNA - WiXInstaller
 
 This is a user-contributed template (thank you very much to Lee Zeitz!) for making a WiX-based installer for an Excel-DNA add-in.
 
-To use this, you will need Visual Studio, and to install the WiX toolset: https://wix.codeplex.com/
+To use this, you will need Visual Studio, and to install the WiX toolset: https://wixtoolset.org/
 
 Some of the WiX project files also need unique Guids to be inserted for your project.
 
