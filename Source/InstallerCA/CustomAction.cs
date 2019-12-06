@@ -162,7 +162,7 @@ namespace InstallerCA
                 szXll64Bit = szFolder.ToString() + szXll64Bit.ToString();
 
 
-                if (szOfficeRegKeyVersions.Length > 0)
+		if (szOfficeRegKeyVersions.Length > 0)
                 {
                     lstVersions = szOfficeRegKeyVersions.Split(',').ToList();
 
@@ -175,19 +175,39 @@ namespace InstallerCA
 
                             string szKeyName = szBaseAddInKey + szOfficeVersionKey + @"\Excel\Options";
 
-                            RegistryKey rkAddInKey = Registry.CurrentUser.OpenSubKey(szKeyName, true);
-                            if (rkAddInKey != null)
-                            {
-                                string[] szValueNames = rkAddInKey.GetValueNames();
+                            var rkAddInKey = Registry.CurrentUser.OpenSubKey(szKeyName, true);
+                            if (rkAddInKey == null) continue;
 
-                                foreach (string szValueName in szValueNames)
+                            var szValueNames = rkAddInKey.GetValueNames();
+                            var allOpenKeyValues = new List<string>();
+                            foreach (string szValueName in szValueNames)
+                            {
+                                //unregister both 32 and 64 xll
+                                if (szValueName.StartsWith("OPEN") && (rkAddInKey.GetValue(szValueName).ToString().Contains(szXll32Bit) || rkAddInKey.GetValue(szValueName).ToString().Contains(szXll64Bit)))
                                 {
-                                     //unregister both 32 and 64 xll
-                                    if (szValueName.StartsWith("OPEN") && (rkAddInKey.GetValue(szValueName).ToString().Contains(szXll32Bit) || rkAddInKey.GetValue(szValueName).ToString().Contains(szXll64Bit)))
-                                    {
-                                        rkAddInKey.DeleteValue(szValueName);
-                                    }
+                                    //Delete the current KEY
+                                    rkAddInKey.DeleteValue(szValueName);
                                 }
+                                else if (szValueName.StartsWith("OPEN"))
+                                {
+                                    //Collect all other OPEN KEYs that will need to be inserted back with adjusted OPEN counter
+                                    //Since we are going to preserve all in the allOpenKeyValues, we can delete the original once,
+                                    //so we can insert / create new with correc tcounters.
+                                    allOpenKeyValues.Add(rkAddInKey.GetValue(szValueName).ToString());
+                                    rkAddInKey.DeleteValue(szValueName);
+                                }
+                            }
+
+                            var i = 0;
+                            //Here all OPEN KEYs are GONE!!! Lets insert new once with correct OPEN counters
+                            foreach (var szValueName in allOpenKeyValues)
+                            {
+                                if (i > 0)
+                                    rkAddInKey.SetValue("OPEN" + i, szValueName);
+                                else
+                                    rkAddInKey.SetValue("OPEN", szValueName);
+
+                                ++i;
                             }
                         }
                     }
