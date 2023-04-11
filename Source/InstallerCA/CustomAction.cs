@@ -1,11 +1,11 @@
-﻿using Microsoft.Deployment.WindowsInstaller;
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Globalization;
+using WixToolset.Dtf.WindowsInstaller;
 
 namespace InstallerCA
 {
@@ -162,7 +162,7 @@ namespace InstallerCA
                 szXll64Bit = szFolder.ToString() + szXll64Bit.ToString();
 
 
-		if (szOfficeRegKeyVersions.Length > 0)
+		        if (szOfficeRegKeyVersions.Length > 0)
                 {
                     lstVersions = szOfficeRegKeyVersions.Split(',').ToList();
 

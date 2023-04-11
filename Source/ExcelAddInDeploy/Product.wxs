@@ -1,21 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿
+<!-- TODO 1/5: Set these two values (make a new Guid for the ProductUpgradeCode)  -->
 <?define ProductVersion = "1.0.1"?>
-<?define ProductUpgradeCode = "{Generate a GUID}"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
-     xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
-  <Product Id="*" Name="!(loc.ProductName)" 
-           Language="!(loc.LANG)"
-           Version="$(var.ProductVersion)" 
-           Manufacturer="!(loc.ProductManufacturer)" 
-           UpgradeCode="$(var.ProductUpgradeCode)">
-    
-    <Package InstallerVersion="200" 
-             Compressed="yes" 
-             InstallPrivileges="elevated" 
-             InstallScope="perUser" 
-             Manufacturer="!(loc.ProductManufacturer)" 
-             Description="!(loc.ProductDescription)"
-             Comments="!(loc.ProductCopyright)"/>
+<?define ProductUpgradeCode = "{697DC734-59CD-43DB-BD0B-959CB783527F}"?>
+
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:netfx="http://wixtoolset.org/schemas/v4/wxs/netfx" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+  <Package Name="!(loc.ProductName)" Language="!(loc.LANG)" Version="$(var.ProductVersion)" Manufacturer="!(loc.ProductManufacturer)" UpgradeCode="$(var.ProductUpgradeCode)" InstallerVersion="200" Scope="perUser"><SummaryInformation Manufacturer="!(loc.ProductManufacturer)" Description="!(loc.ProductDescription)" />
     
     <MediaTemplate EmbedCab="yes" />
     <MajorUpgrade Schedule="afterInstallInitialize" DowngradeErrorMessage="A newer version of [ProductName] is already installed." AllowSameVersionUpgrades="yes" />
@@ -30,30 +19,19 @@
     <Property Id="ARPPRODUCTICON" Value="ProductIcon" />
 
     <!-- Windows Installer set TARGETDIR to the local hard drive with the most free space.  The top-level Directory must be Id="TARGETDIR" Name="SourceDir" -->
-    <Directory Id="TARGETDIR" Name="SourceDir">
-      <Directory Id="ProgramFilesFolder">
-        <Directory Id="COMPANYDIR" Name="Company Directory" />
-      </Directory>
-      <Directory Id="AppDataFolder">
-        <Directory Id="COMPANYAPPDATADIR" Name="!(loc.ProductManufacturer)">
-          <!-- !! THIS ID IS USED IN THE CUSTOM ACTION SO DO NOT CHANGE IT -->
-          <Directory Id="AddinFolder" Name="!(loc.ProductName)">
-          </Directory>
-        </Directory>
-      </Directory>
-    </Directory>
+    
 
     <!-- There must be a feature in the project and all components must be installed into the feature to be installed. -->
     <Feature Id="ExcelAddIn" Title="!(loc.ProductName)" Description="!(loc.ProductDescription)" Level="1" AllowAdvertise="no">
-      <ComponentGroupRef Id="XLLDistributables"/>
+      <ComponentGroupRef Id="XLLDistributables" />
     </Feature>
 
     <PropertyRef Id="NETFRAMEWORK40CLIENT" />
-    <Condition Message="[ProductName] requires .NET Framework 4.0.">Installed OR NETFRAMEWORK40CLIENT</Condition>
+    <Launch Condition="Installed OR NETFRAMEWORK40CLIENT" Message="[ProductName] requires .NET Framework 4.0." />
     <UI Id="UI">
        <!--See http://wix.sourceforge.net/manual-wix3/WixUI_index.htm for more information
        The following line adds the minimal WiX Dialog set to the install--> 
-      <UIRef Id="WixUI_Minimal"/>
+      <ui:WixUI Id="WixUI_Minimal" />
       <!-- This TextStyle is used in the CustonMessages.wxl file -->
       <TextStyle Id="Black10" FaceName="Tahoma" Size="10" Red="0" Green="0" Blue="0" Bold="yes" />
     </UI>
@@ -80,48 +58,62 @@
     
     <Binary Id="InstallerCA.CA.dll" SourceFile="$(var.InstallerCA.TargetDir)$(var.InstallerCA.TargetName).CA.dll" />
     <CustomAction Id="Action_RegisterAddIn.SetProperty" Return="check" Property="Action_RegisterAddIn" Value="OFFICEREGKEYS=[OFFICEREGKEYS];XLL32=[XLL32];XLL64=[XLL64]" />
-    <CustomAction Id="Action_RegisterAddIn" BinaryKey="InstallerCA.CA.dll" DllEntry="CaRegisterAddIn" Return="check" Execute="immediate">
-    </CustomAction>
+    <CustomAction Id="Action_RegisterAddIn" DllEntry="CaRegisterAddIn" Return="check" Execute="immediate" BinaryRef="InstallerCA.CA.dll"/>
     <CustomAction Id="Action_UnRegisterAddIn.SetProperty" Return="check" Property="Action_UnRegisterAddIn" Value="OFFICEREGKEYS=[OFFICEREGKEYS];XLL32=[XLL32];XLL64=[XLL64]" />
-    <CustomAction Id="Action_UnRegisterAddIn" BinaryKey="InstallerCA.CA.dll" DllEntry="CaUnRegisterAddIn" Return="check" Execute="immediate" />
-    <CustomAction Id="Action_CloseAppsPrompt" BinaryKey="InstallerCA.CA.dll" DllEntry="ClosePrompt" Return="check" />
+    <CustomAction Id="Action_UnRegisterAddIn" DllEntry="CaUnRegisterAddIn" Return="check" Execute="immediate" BinaryRef="InstallerCA.CA.dll" />
+    <CustomAction Id="Action_CloseAppsPrompt" DllEntry="ClosePrompt" Return="check" BinaryRef="InstallerCA.CA.dll" />
     <InstallExecuteSequence>
       <Custom Action="Action_CloseAppsPrompt" After="Action_RegisterAddIn.SetProperty" />
-      <Custom Action="Action_RegisterAddIn.SetProperty" Before="Action_RegisterAddIn">NOT Installed</Custom>
-      <Custom Action="Action_RegisterAddIn" Before="InstallFinalize">NOT Installed</Custom>
-      <Custom Action="Action_UnRegisterAddIn.SetProperty" Before="Action_UnRegisterAddIn">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
-      <Custom Action="Action_UnRegisterAddIn" Before="InstallFinalize">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
+      <Custom Action="Action_RegisterAddIn.SetProperty" Before="Action_RegisterAddIn" Condition="NOT Installed" />
+      <Custom Action="Action_RegisterAddIn" Before="InstallFinalize" Condition="NOT Installed" />
+      <Custom Action="Action_UnRegisterAddIn.SetProperty" Before="Action_UnRegisterAddIn" Condition="Installed AND NOT UPGRADINGPRODUCTCODE" />
+      <Custom Action="Action_UnRegisterAddIn" Before="InstallFinalize" Condition="Installed AND NOT UPGRADINGPRODUCTCODE" />
     </InstallExecuteSequence>
     <AdminExecuteSequence>
       <Custom Action="Action_CloseAppsPrompt" After="Action_RegisterAddIn.SetProperty" />
-      <Custom Action="Action_RegisterAddIn.SetProperty" Before="InstallFinalize">NOT Installed</Custom>
-      <Custom Action="Action_RegisterAddIn" After="Action_RegisterAddIn.SetProperty">NOT Installed</Custom>
-      <Custom Action="Action_UnRegisterAddIn.SetProperty" Before="InstallFinalize">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
-      <Custom Action="Action_UnRegisterAddIn" After="Action_UnRegisterAddIn.SetProperty">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
+      <Custom Action="Action_RegisterAddIn.SetProperty" Before="InstallFinalize" Condition="NOT Installed" />
+      <Custom Action="Action_RegisterAddIn" After="Action_RegisterAddIn.SetProperty" Condition="NOT Installed" />
+      <Custom Action="Action_UnRegisterAddIn.SetProperty" Before="InstallFinalize" Condition="Installed AND NOT UPGRADINGPRODUCTCODE" />
+      <Custom Action="Action_UnRegisterAddIn" After="Action_UnRegisterAddIn.SetProperty" Condition="Installed AND NOT UPGRADINGPRODUCTCODE" />
     </AdminExecuteSequence>
 
-  </Product>
+  
+      <StandardDirectory Id="ProgramFilesFolder">
+        <Directory Id="COMPANYDIR" Name="!(loc.ProductManufacturer)" />
+      </StandardDirectory>
+      <StandardDirectory Id="AppDataFolder">
+        <Directory Id="COMPANYAPPDATADIR" Name="!(loc.ProductManufacturer)">
+          <!-- !! THIS ID IS USED IN THE CUSTOM ACTION SO DO NOT CHANGE IT -->
+          <Directory Id="AddinFolder" Name="!(loc.ProductName)">
+          </Directory>
+        </Directory>
+      </StandardDirectory>
+    </Package>
 
   <Fragment>
     <!-- 
     Components always have unique GUIDs so that Windows can track every file installed. This information is stored in the registry.
     Components should only contain a single file. KeyPath files will be replaced if missing by the repair button on the installer.
-    Try using for source: $(var.PROJECTREF.TargetDir)$(var.PROJECTREF.TargetName)-AddIn64-packed.xll
     -->
     <ComponentGroup Id="XLLDistributables">
-      <Component Id="XLL32" Guid="{Generate a GUID}" Directory="AddinFolder">
-        <RegistryValue Root="HKCU" Key="Software\!(loc.ProductManufacturer)\Excel Add-In" Name="Xll32Bit" Value="AddIns" KeyPath="yes" Type="string" />
+      <!-- TODO 2/5: Make a new Guid for the Component  -->
+      <Component Id="XLL32" Guid="{2CC3F937-28C6-4D97-B335-F5724DC782E7}" Directory="AddinFolder">
+        <RegistryValue Root="HKCU" Key="Software\!(loc.ProductManufacturer)\!(loc.ProductNameNoSpace)" Name="Xll32Bit" Value="AddIns" KeyPath="yes" Type="string" />
 
-        <File Id="EXCELXLL32PACKED.XLL" Name="!(loc.ProductNameNoSpace)32.xll" Source="Path to 32 bit packed xll" >
-          <netfx:NativeImage Id="ngen_32Xll" Platform="32bit" Priority="0"/>
+        <!-- TODO 3/5: Set the Source path to the 32-bit xll location -->
+        <File Id="EXCELXLL32PACKED.XLL" Name="!(loc.ProductNameNoSpace)32.xll" Source="C:\Work\GitHub\govert\Test-WiXInstaller\Source\Test\bin\Debug\net472\publish\Test-AddIn-packed.xll">
+          <netfx:NativeImage Id="ngen_32Xll" Platform="32bit" Priority="0" />
         </File>
       </Component>
-      <Component Id="XLL64" Guid="{Generate a GUID}" Directory="AddinFolder">
-        <RegistryValue Root="HKCU" Key="Software\!(loc.ProductManufacturer)\Excel Add-In" Name="Xll64Bit" Value="AddIns" KeyPath="yes" Type="string" />
-
-        <File Id="EXCELXLL64PACKED.XLL" Name="!(loc.ProductNameNoSpace)64.xll" Source="Path to 64 bit packed xll" >
-          <netfx:NativeImage Id="ngen_64Xll" Platform="64bit" Priority="0"/>
+      <!-- TODO 4/5: Make a new Guid for the Component  -->
+      <Component Id="XLL64" Guid="{B3E718B0-ED91-4E4C-B1B3-4F651C2CBB97}" Directory="AddinFolder">
+        <RegistryValue Root="HKCU" Key="Software\!(loc.ProductManufacturer)\!(loc.ProductNameNoSpace)" Name="Xll64Bit" Value="AddIns" KeyPath="yes" Type="string" />
+        
+        <!-- TODO 5/5: Set the Source path to the 32-bit xll location -->
+        <File Id="EXCELXLL64PACKED.XLL" Name="!(loc.ProductNameNoSpace)64.xll" Source="C:\Work\GitHub\govert\Test-WiXInstaller\Source\Test\bin\Debug\net472\publish\Test-AddIn64-packed.xll">
+          <netfx:NativeImage Id="ngen_64Xll" Platform="64bit" Priority="0" />
         </File>
+        
         <RemoveFile On="uninstall" Id="XLL32" Directory="AddinFolder" Name="!(loc.ProductNameNoSpace)32.xll" />
         <RemoveFile On="uninstall" Id="XLL64" Directory="AddinFolder" Name="!(loc.ProductNameNoSpace)64.xll" />
         <RemoveFolder Id="AddinFolderRemove" Directory="AddinFolder" On="uninstall" />
