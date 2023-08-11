@@ -1,0 +1,14 @@
+﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:bal="http://wixtoolset.org/schemas/v4/wxs/bal">
+  <Bundle Name="ExcelAddInBundle" Manufacturer="TODO Manufacturer" Version="1.0.0.0" UpgradeCode="a8232bfc-a6ce-4fec-bb1b-512acf92c528" >
+    <!--Name="..." Version="..." Manufacturer="..." UpgradeCode="..." Copyright="..." IconSourceFile="..." AboutUrl="...">-->
+
+    <BootstrapperApplication>
+      <bal:WixStandardBootstrapperApplication LicenseFile="Resources\EULA.rtf" LogoFile="Resources\Icon.ico" Theme="rtfLicense" />
+    </BootstrapperApplication>
+
+    <Chain>
+      <MsiPackage SourceFile="ExcelAddInDeploy.msi" />
+    </Chain>
+
+  </Bundle>
+</Wix>
