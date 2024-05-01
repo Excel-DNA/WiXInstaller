@@ -36,6 +36,7 @@ namespace InstallerCA
                 szXll32Bit = session["XLL32"];
                 szXll64Bit = session["XLL64"];
                 szFolder = session["AddinFolder"];
+                session.Log($"CaRegisterAddIn Args: OFFICEREGKEYS={szOfficeRegKeyVersions}, XLL32={szXll32Bit}, XLL64={szXll64Bit}, szFolder={szFolder}");
 
                 szXll32Bit = szFolder.ToString() + szXll32Bit.ToString();
                 szXll64Bit = szFolder.ToString() + szXll64Bit.ToString();
@@ -157,6 +158,7 @@ namespace InstallerCA
                 szXll32Bit = session["XLL32"];
                 szXll64Bit = session["XLL64"];
                 szFolder = session["AddinFolder"];
+                session.Log($"CaUnRegisterAddIn Args: OFFICEREGKEYS={szOfficeRegKeyVersions}, XLL32={szXll32Bit}, XLL64={szXll64Bit}, szFolder={szFolder}");
 
                 szXll32Bit = szFolder.ToString() + szXll32Bit.ToString();
                 szXll64Bit = szFolder.ToString() + szXll64Bit.ToString();
