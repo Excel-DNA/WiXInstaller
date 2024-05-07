@@ -6,10 +6,12 @@ This is based on a user-contributed template (thank you very much to Lee Zeitz!)
 Use this project as a template - fork it and update from there.
 The Test add-in is just as a sample - the add-in project need not be part of the installer solution.
 
-In the ExcelAddInDeploy project, there are some customizations to make:
-* EnglishLoc.wxl - the strings for the installer to be fixed up
-* Product.wxs - set the ProductCode and UpgradeCode to be unique for your add-in, and the other Guids and paths - look for the TODOs.
-* Fix the Resources - Banner, Icon end EULA, as required.
+*	You need to install the free “HeatWave” extension for Visual Studio from FireGiant (this guys whosupport WiX) - https://www.firegiant.com/docs/heatwave/. This is developed by the same people who made the WiX toolset, and they also provide some commercial products and support around it, like this VS extension.
+*	Make your own fork of this repository
+*	Update the information in the ExcelAddInDeploy project:
+  * EnglishLoc.wxl - the strings for the installer to be fixed up
+  *	Product.wxs - set the ProductCode and UpgradeCode to be unique for your add-in, and the other Guids and add-in paths - look for the TODOs in this file
+  * Fix the Resources - Banner, Icon end EULA, as required.
 
 Version for making a Local Machine installer using Active Setup
 ---
