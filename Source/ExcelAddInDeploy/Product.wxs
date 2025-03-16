@@ -109,7 +109,7 @@
       <Component Id="XLL64" Guid="{B3E718B0-ED91-4E4C-B1B3-4F651C2CBB97}" Directory="AddinFolder">
         <RegistryValue Root="HKCU" Key="Software\!(loc.ProductManufacturer)\!(loc.ProductNameNoSpace)" Name="Xll64Bit" Value="AddIns" KeyPath="yes" Type="string" />
         
-        <!-- TODO 5/5: Set the Source path to the 32-bit xll location -->
+        <!-- TODO 5/5: Set the Source path to the 64-bit xll location -->
         <File Id="EXCELXLL64PACKED.XLL" Name="!(loc.ProductNameNoSpace)64.xll" Source="C:\Work\GitHub\govert\Test-WiXInstaller\Source\Test\bin\Debug\net472\publish\Test-AddIn64-packed.xll">
           <netfx:NativeImage Id="ngen_64Xll" Platform="64bit" Priority="0" />
         </File>
