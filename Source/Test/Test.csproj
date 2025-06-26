@@ -5,7 +5,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ExcelDna.AddIn" Version="1.7.0-rc3" />
+    <PackageReference Include="ExcelDna.AddIn" Version="1.8.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="ExtraFiles\File1.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="ExtraFiles\MoreExtraFiles\File3.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="ExtraFiles\MoreExtraFiles\File4.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   
 </Project>
