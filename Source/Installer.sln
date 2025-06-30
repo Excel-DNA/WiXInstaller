@@ -10,6 +10,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "Test\Test.csproj", "{95690D96-9DFD-4E02-AD90-BEC50017767D}"
 EndProject
 Project("{B7DD6F7E-DEF8-4E67-B5B7-07EF123DB6F0}") = "ExcelAddInBundle", "ExcelAddInBundle\ExcelAddInBundle.wixproj", "{32CD7165-0E3E-4728-8090-A865DA4F4402}"
+	ProjectSection(ProjectDependencies) = postProject
+		{95690D96-9DFD-4E02-AD90-BEC50017767D} = {95690D96-9DFD-4E02-AD90-BEC50017767D}
+		{F135D7B8-747C-4C4F-A9FC-1F3A25FBD403} = {F135D7B8-747C-4C4F-A9FC-1F3A25FBD403}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

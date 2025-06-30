@@ -1,5 +1,6 @@
-<Project Sdk="WixToolset.Sdk/4.0.0">
+﻿<Project Sdk="WixToolset.Sdk/4.0.1">
   <PropertyGroup>
+    <OutputType>Package</OutputType>
     <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
   </PropertyGroup>
   <PropertyGroup>
@@ -9,7 +10,8 @@
     <DefineConstants>Debug;MSIProductVersion=$(MSIProductVersion)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <LinkerAdditionalOptions></LinkerAdditionalOptions>
+    <LinkerAdditionalOptions>
+    </LinkerAdditionalOptions>
     <DefineConstants>MSIProductVersion=$(MSIProductVersion)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
@@ -32,10 +34,19 @@
     <Content Include="Resources\Icon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="WixToolset.UI.wixext" Version="4.0.0" />
-    <PackageReference Include="WixToolset.NetFx.wixext" Version="4.0.0" />
+    <PackageReference Include="WixToolset.UI.wixext" Version="4.0.1" />
+    <PackageReference Include="WixToolset.NetFx.wixext" Version="4.0.1" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="EnglishLoc.wxl" />
   </ItemGroup>
+
+  <!-- For the add-in output directory, 
+       we create a property and expose as a variable to WiX 
+  -->
+  <PropertyGroup>
+    <TestPublishDir>$([System.IO.Path]::GetFullPath('$(SolutionDir)Test\bin\$(Configuration)\net472\publish'))</TestPublishDir>
+    <DefineConstants>$(DefineConstants);TestPublishDir=$(TestPublishDir)</DefineConstants>
+  </PropertyGroup>
+
 </Project>

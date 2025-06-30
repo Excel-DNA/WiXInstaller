@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+
+  <Fragment>
+    <DirectoryRef Id="AddinFolder">
+      <Directory Id="ExtraFilesDir" Name="ExtraFiles">
+        <Directory Id="MoreExtraFilesDir" Name="MoreExtraFiles" />
+      </Directory>
+    </DirectoryRef>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="ExtraDistributables">
+
+      <!-- File directly under AddinFolder -->
+      <Component Id="Cmp_FileTxt" Guid="{03CA5E33-6850-41F2-B4B8-80E2341DADA8}" Directory="AddinFolder">
+        <RegistryValue Root="HKCU" Key="Software\!(loc.ProductManufacturer)\!(loc.ProductNameNoSpace)\ExtraFiles" Name="FileTxt" Type="string" Value="Installed" KeyPath="yes"/>
+        <File Id="Fil_FileTxt" Source="$(var.TestPublishDir)\File.txt" />
+        <RemoveFile Id="Remove_FileTxt" Name="File.txt" On="uninstall"/>
+      </Component>
+
+      <!-- File under ExtraFilesDir -->
+      <Component Id="Cmp_File1Txt" Guid="{C3EEB361-D8CD-41B7-97F1-C85332FBB5B1}" Directory="ExtraFilesDir">
+        <RegistryValue Root="HKCU" Key="Software\!(loc.ProductManufacturer)\!(loc.ProductNameNoSpace)\ExtraFiles" Name="File1Txt" Type="string" Value="Installed" KeyPath="yes"/>
+        <File Id="Fil_File1Txt" Source="$(var.TestPublishDir)\ExtraFiles\File1.txt" />
+        <RemoveFile Id="Remove_File1Txt" Name="File1.txt" On="uninstall"/>
+      </Component>
+
+      <!-- Files under MoreExtraFilesDir -->
+      <Component Id="Cmp_File3Txt" Guid="{C893667A-8322-4B28-B190-C3C2C4EAC788}" Directory="MoreExtraFilesDir">
+        <RegistryValue Root="HKCU" Key="Software\!(loc.ProductManufacturer)\!(loc.ProductNameNoSpace)\ExtraFiles" Name="File3Txt" Type="string" Value="Installed" KeyPath="yes"/>
+        <File Id="Fil_File3Txt" Source="$(var.TestPublishDir)\ExtraFiles\MoreExtraFiles\File3.txt" />
+        <RemoveFile Id="Remove_File3Txt" Name="File3.txt" On="uninstall"/>
+      </Component>
+
+      <Component Id="Cmp_File4Txt" Guid="{AFDFAE5A-4694-49E4-A0B8-2C856DB58E66}" Directory="MoreExtraFilesDir">
+        <RegistryValue Root="HKCU" Key="Software\!(loc.ProductManufacturer)\!(loc.ProductNameNoSpace)\ExtraFiles" Name="File4Txt" Type="string" Value="Installed" KeyPath="yes"/>
+        <File Id="Fil_File4Txt" Source="$(var.TestPublishDir)\ExtraFiles\MoreExtraFiles\File4.txt" />
+        <RemoveFile Id="Remove_File4Txt" Name="File4.txt" On="uninstall"/>
+      </Component>
+
+      <!-- Remove folders on uninstall -->
+      <Component Id="Cmp_RemoveDirs" Guid="{8F66C797-2667-4697-A191-4BB3D06AAFBC}" Directory="MoreExtraFilesDir">
+        <RegistryValue Root="HKCU" Key="Software\!(loc.ProductManufacturer)\!(loc.ProductNameNoSpace)\ExtraFiles" Name="CleanDirs" Type="string" Value="Installed" KeyPath="yes"/>
+        <RemoveFolder Id="Remove_MoreExtraFilesDir" Directory="MoreExtraFilesDir" On="uninstall"/>
+        <RemoveFolder Id="Remove_ExtraFilesDir" Directory="ExtraFilesDir" On="uninstall"/>
+      </Component>
+
+    </ComponentGroup>
+  </Fragment>
+</Wix>
+
+
+<!--<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+
+  <Fragment>
+    <ComponentGroup Id="ExtraDistributables" Directory="AddinFolder">
+      <Files Include="$(var.TestPublishDir)\**\*.*">
+        <Exclude Files="$(var.TestPublishDir)\Test-AddIn-packed.xll" />
+        <Exclude Files="$(var.TestPublishDir)\Test-AddIn64-packed.xll" />
+      </Files>
+    </ComponentGroup>
+  </Fragment>
+
+</Wix>-->

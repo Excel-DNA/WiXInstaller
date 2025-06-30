@@ -1,5 +1,7 @@
 ﻿
-<!-- TODO 1/5: Set these two values (make a new Guid for the ProductUpgradeCode)  -->
+<!-- TODO 1/5: Set these values (make a new Guid for the ProductUpgradeCode)  -->
+
+<!--<?define TestPublishDir = "..\Test\bin\$(var.Configuration)\net472\publish" ?>-->
 <?define ProductVersion = "1.0.1"?>
 <?define ProductUpgradeCode = "{697DC734-59CD-43DB-BD0B-959CB783527F}"?>
 
@@ -24,6 +26,7 @@
     <!-- There must be a feature in the project and all components must be installed into the feature to be installed. -->
     <Feature Id="ExcelAddIn" Title="!(loc.ProductName)" Description="!(loc.ProductDescription)" Level="1" AllowAdvertise="no">
       <ComponentGroupRef Id="XLLDistributables" />
+      <ComponentGroupRef Id="ExtraDistributables" />
     </Feature>
 
     <PropertyRef Id="NETFRAMEWORK40CLIENT" />
@@ -101,7 +104,7 @@
         <RegistryValue Root="HKCU" Key="Software\!(loc.ProductManufacturer)\!(loc.ProductNameNoSpace)" Name="Xll32Bit" Value="AddIns" KeyPath="yes" Type="string" />
 
         <!-- TODO 3/5: Set the Source path to the 32-bit xll location -->
-        <File Id="EXCELXLL32PACKED.XLL" Name="!(loc.ProductNameNoSpace)32.xll" Source="C:\Work\GitHub\govert\Test-WiXInstaller\Source\Test\bin\Debug\net472\publish\Test-AddIn-packed.xll">
+        <File Id="EXCELXLL32PACKED.XLL" Name="!(loc.ProductNameNoSpace)32.xll" Source="$(var.TestPublishDir)\Test-AddIn-packed.xll">
           <netfx:NativeImage Id="ngen_32Xll" Platform="32bit" Priority="0" />
         </File>
       </Component>
@@ -110,7 +113,7 @@
         <RegistryValue Root="HKCU" Key="Software\!(loc.ProductManufacturer)\!(loc.ProductNameNoSpace)" Name="Xll64Bit" Value="AddIns" KeyPath="yes" Type="string" />
         
         <!-- TODO 5/5: Set the Source path to the 32-bit xll location -->
-        <File Id="EXCELXLL64PACKED.XLL" Name="!(loc.ProductNameNoSpace)64.xll" Source="C:\Work\GitHub\govert\Test-WiXInstaller\Source\Test\bin\Debug\net472\publish\Test-AddIn64-packed.xll">
+        <File Id="EXCELXLL64PACKED.XLL" Name="!(loc.ProductNameNoSpace)64.xll" Source="$(var.TestPublishDir)\Test-AddIn64-packed.xll">
           <netfx:NativeImage Id="ngen_64Xll" Platform="64bit" Priority="0" />
         </File>
         
@@ -121,4 +124,7 @@
       </Component>
     </ComponentGroup>
   </Fragment>
+
+  
+  
 </Wix>

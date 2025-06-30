@@ -3,7 +3,7 @@
     "Excel": {
       "commandName": "Executable",
       "executablePath": "C:\\Program Files\\Microsoft Office\\root\\Office16\\EXCEL.EXE",
-      "commandLineArgs": "Test-AddIn64.xll"
+      "commandLineArgs": "/x \"Test-AddIn64.xll\""
     }
   }
 }
