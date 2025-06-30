@@ -40,13 +40,28 @@
   <ItemGroup>
     <EmbeddedResource Include="EnglishLoc.wxl" />
   </ItemGroup>
-
-  <!-- For the add-in output directory, 
-       we create a property and expose as a variable to WiX 
-  -->
+  <ItemGroup>
+    <None Include="Generate-ExtrafilesWxs.ps1" />
+  </ItemGroup>
+  <!-- For the add-in output directory, we create a property and expose as a variable to WiX -->
   <PropertyGroup>
     <TestPublishDir>$([System.IO.Path]::GetFullPath('$(SolutionDir)Test\bin\$(Configuration)\net472\publish'))</TestPublishDir>
     <DefineConstants>$(DefineConstants);TestPublishDir=$(TestPublishDir)</DefineConstants>
   </PropertyGroup>
-
+  <!-- Generate the .wxs -->
+  <Target Name="GenerateExtraFilesWxs" BeforeTargets="CoreCompile">
+    <Exec Command="powershell.exe -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\Generate-ExtraFilesWxs.ps1&quot; -PublishDir &quot;$(TestPublishDir)&quot; -OutputWxs &quot;$(MSBuildProjectDirectory)\obj\ExtraFiles.wxs&quot;" />
+  </Target>
+  <!-- Include the generated file for compilation -->
+  <ItemGroup>
+    <Compile Include="obj\ExtraFiles.wxs" />
+  </ItemGroup>
+  <!-- To include the extra files into the install, we grab the whole recursive list here into the ExtraFile variable 
+       then use out generator to write the extra .wxs file into the obj directory
+  -->
+  <!--
+  <ItemGroup>
+    <ExtraFile Include="$(TestPublishDir)\**\*.*" Exclude="$(TestPublishDir)\**\*.xll" />
+  </ItemGroup>
+  <Import Project="GenerateExtraFiles.targets" />-->
 </Project>
