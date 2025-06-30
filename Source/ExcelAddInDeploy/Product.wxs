@@ -1,9 +1,14 @@
 ﻿
-<!-- TODO 1/5: Set these values (make a new Guid for the ProductUpgradeCode)  -->
-
-<!--<?define TestPublishDir = "..\Test\bin\$(var.Configuration)\net472\publish" ?>-->
+<!-- TODO 1/5: Set these values (make a new Guid for the ProductUpgradeCode) 
+The filenames are those in the publish directory of the AddinPublishDir (which is defined in the .wixproj)
+-->
 <?define ProductVersion = "1.0.1"?>
 <?define ProductUpgradeCode = "{697DC734-59CD-43DB-BD0B-959CB783527F}"?>
+<?define AddinFileName32 = "Test-AddIn-packed.xll"?>
+<?define AddinFileName64 = "Test-AddIn64-packed.xll"?>
+
+<!-- NOTE: This directory (the variable AddinPublishDir) is set up in the .wixproj -->
+<!-- <?define AddinPublishDir = "..\Test\bin\$(var.Configuration)\net472\publish" ?>-->
 
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:netfx="http://wixtoolset.org/schemas/v4/wxs/netfx" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
   <Package Name="!(loc.ProductName)" Language="!(loc.LANG)" Version="$(var.ProductVersion)" Manufacturer="!(loc.ProductManufacturer)" UpgradeCode="$(var.ProductUpgradeCode)" InstallerVersion="200" Scope="perUser"><SummaryInformation Manufacturer="!(loc.ProductManufacturer)" Description="!(loc.ProductDescription)" />
@@ -84,6 +89,9 @@
       <StandardDirectory Id="ProgramFilesFolder">
         <Directory Id="COMPANYDIR" Name="!(loc.ProductManufacturer)" />
       </StandardDirectory>
+      <!-- We're doing per-user install into the AppData\Roaming folder 
+           Change the next line from "AppDataFolder to LocalAppDataFolder" to install into AppData\Local.
+      -->
       <StandardDirectory Id="AppDataFolder">
         <Directory Id="COMPANYAPPDATADIR" Name="!(loc.ProductManufacturer)">
           <!-- !! THIS ID IS USED IN THE CUSTOM ACTION SO DO NOT CHANGE IT -->
@@ -104,7 +112,7 @@
         <RegistryValue Root="HKCU" Key="Software\!(loc.ProductManufacturer)\!(loc.ProductNameNoSpace)" Name="Xll32Bit" Value="AddIns" KeyPath="yes" Type="string" />
 
         <!-- TODO 3/5: Set the Source path to the 32-bit xll location -->
-        <File Id="EXCELXLL32PACKED.XLL" Name="!(loc.ProductNameNoSpace)32.xll" Source="$(var.TestPublishDir)\Test-AddIn-packed.xll">
+        <File Id="EXCELXLL32PACKED.XLL" Name="!(loc.ProductNameNoSpace)32.xll" Source="$(var.AddinPublishDir)\$(var.AddinFileName32)">
           <netfx:NativeImage Id="ngen_32Xll" Platform="32bit" Priority="0" />
         </File>
       </Component>
@@ -113,7 +121,7 @@
         <RegistryValue Root="HKCU" Key="Software\!(loc.ProductManufacturer)\!(loc.ProductNameNoSpace)" Name="Xll64Bit" Value="AddIns" KeyPath="yes" Type="string" />
         
         <!-- TODO 5/5: Set the Source path to the 32-bit xll location -->
-        <File Id="EXCELXLL64PACKED.XLL" Name="!(loc.ProductNameNoSpace)64.xll" Source="$(var.TestPublishDir)\Test-AddIn64-packed.xll">
+        <File Id="EXCELXLL64PACKED.XLL" Name="!(loc.ProductNameNoSpace)64.xll" Source="$(var.AddinPublishDir)\$(var.AddinFileName64)">
           <netfx:NativeImage Id="ngen_64Xll" Platform="64bit" Priority="0" />
         </File>
         
