@@ -6,25 +6,20 @@ param(
     [string]$RegKeyBase = "Software\MyCompany\MyProduct\ExtraFiles"
 )
 
-# === Helper: make stable GUID from any string ===
+# === Stable GUID helper ===
 function Get-StableGuid {
     param([string]$InputString)
     $md5 = [System.Security.Cryptography.MD5]::Create()
     $bytes = [System.Text.Encoding]::UTF8.GetBytes($InputString)
     $hash = $md5.ComputeHash($bytes)
-
-    # Format: 8-4-4-4-12 hex digits
     $hex = [System.BitConverter]::ToString($hash).Replace("-", "")
-    $guidStr = "{0}-{1}-{2}-{3}-{4}" -f `
+    "{0}-{1}-{2}-{3}-{4}" -f `
         $hex.Substring(0, 8),
         $hex.Substring(8, 4),
         $hex.Substring(12, 4),
         $hex.Substring(16, 4),
         $hex.Substring(20, 12)
-
-    return $guidStr
 }
-
 
 # === Setup XML ===
 $namespace = "http://wixtoolset.org/schemas/v4/wxs"
@@ -68,15 +63,25 @@ $components = $xml.CreateElement("ComponentGroup", $namespace)
 $components.SetAttribute("Id", "ExtraDistributables")
 $fragment2.AppendChild($components) | Out-Null
 
-# === Group files by directory ===
+# === Get directories and files ===
 $dirGroups = @{}
+
+# Group all files by directory
 Get-ChildItem -Path $PublishDir -Recurse -File | Where-Object { $_.Extension -ne ".xll" } | ForEach-Object {
     $relDir = if ($_.Directory.FullName -eq $PublishDir) { "" } else { $_.DirectoryName.Substring($PublishDir.Length).Trim("\") }
     if (-not $dirGroups.ContainsKey($relDir)) { $dirGroups[$relDir] = @() }
     $dirGroups[$relDir] += $_
 }
 
-# === Emit one component per directory ===
+# Ensure ALL directories get an entry, even if empty
+Get-ChildItem -Path $PublishDir -Recurse -Directory | ForEach-Object {
+    $relDir = $_.FullName.Substring($PublishDir.Length).Trim("\")
+    if (-not $dirGroups.ContainsKey($relDir)) { $dirGroups[$relDir] = @() }
+}
+# Also add root directory explicitly
+if (-not $dirGroups.ContainsKey("")) { $dirGroups[""] = @() }
+
+# === Emit Components ===
 foreach ($kvp in $dirGroups.GetEnumerator()) {
     $relDirPath = $kvp.Key
     $filesInDir = $kvp.Value
@@ -89,16 +94,12 @@ foreach ($kvp in $dirGroups.GetEnumerator()) {
     $compElement.SetAttribute("Guid", "{$componentGuid}")
     $compElement.SetAttribute("Directory", $dirId)
 
-    # Always create a valid RegistryValue once per component
+    # Always include a RegistryValue for KeyPath
     $reg = $xml.CreateElement("RegistryValue", $namespace)
-
-    # Valid Key: subkey per directory
     $regKey = $RegKeyBase
     if ($relDirPath -ne "") {
         $relClean = ($relDirPath -replace '^[\\\/]+', '').Replace('/', '\').Replace('\\', '\')
-        if ($relClean -ne "") {
-            $regKey += "\" + $relClean
-        }
+        $regKey += "\" + $relClean
     }
     $reg.SetAttribute("Root", $RegistryRoot)
     $reg.SetAttribute("Key", $regKey)
@@ -108,24 +109,29 @@ foreach ($kvp in $dirGroups.GetEnumerator()) {
     $reg.SetAttribute("KeyPath", "yes")
     $compElement.AppendChild($reg) | Out-Null
 
-    # Files in this directory
+    # Add files and RemoveFile for each file with unique ID
     foreach ($file in $filesInDir) {
         $relPath = $file.FullName.Substring($PublishDir.Length).Trim("\")
+        $safeRelPath = ($relPath -replace '[\\\/]', '_')
+
         $fileElem = $xml.CreateElement("File", $namespace)
-        $fileElem.SetAttribute("Id", "Fil_" + ($relPath -replace '[\\\/]', '_'))
+        $fileElem.SetAttribute("Id", "Fil_" + $safeRelPath)
         $fileElem.SetAttribute("Source", $file.FullName)
         $compElement.AppendChild($fileElem) | Out-Null
 
         $removeElem = $xml.CreateElement("RemoveFile", $namespace)
-        $removeElem.SetAttribute("Id", "Remove_" + $file.Name)
+        $removeElem.SetAttribute("Id", "Remove_" + $safeRelPath)  # Use rel path for uniqueness
         $removeElem.SetAttribute("Name", $file.Name)
         $removeElem.SetAttribute("On", "uninstall")
         $compElement.AppendChild($removeElem) | Out-Null
     }
 
+    # If root dir: do not add RemoveFolder for root
     if ($relDirPath -ne "") {
+        # Subdirectories only get RemoveFolder
         $removeFolder = $xml.CreateElement("RemoveFolder", $namespace)
-        $removeFolder.SetAttribute("Id", "Remove_" + ($relDirPath -replace '[\\\/]', '_'))
+        $safeDirId = if ($relDirPath -eq "") { "_root_" } else { ($relDirPath -replace '[\\\/]', '_') }
+        $removeFolder.SetAttribute("Id", "RemoveFolder_" + $safeDirId)
         $removeFolder.SetAttribute("Directory", $dirId)
         $removeFolder.SetAttribute("On", "uninstall")
         $compElement.AppendChild($removeFolder) | Out-Null

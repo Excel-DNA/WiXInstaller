@@ -1,6 +1,5 @@
 ﻿<Project Sdk="WixToolset.Sdk/4.0.1">
   <PropertyGroup>
-    <OutputType>Package</OutputType>
     <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
     <SuppressIces>ICE91</SuppressIces> <!-- We install per-user only, so don't complain about ALLUSERS problems -->
   </PropertyGroup>

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
@@ -9,10 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="File.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="ExtraFiles\File1.txt">
+    <None Update="ExtraFiles\GUI\GuiRibbon\AnotherFile.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="ExtraFiles\MoreExtraFiles\File3.txt">
@@ -24,7 +21,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy /Y $(OutDir)File.txt $(OutDir)publish" />
+    <!--<Exec Command="xcopy /Y $(OutDir)File.txt $(OutDir)publish" />-->
     <Exec Command="xcopy /E /I /Y $(OutDir)ExtraFiles\* $(OutDir)publish\ExtraFiles" />
   </Target>
   
