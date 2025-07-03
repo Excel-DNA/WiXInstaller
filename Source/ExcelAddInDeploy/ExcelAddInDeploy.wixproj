@@ -1,6 +1,7 @@
-<Project Sdk="WixToolset.Sdk/4.0.0">
+﻿<Project Sdk="WixToolset.Sdk/4.0.1">
   <PropertyGroup>
     <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
+    <SuppressIces>ICE91</SuppressIces> <!-- We install per-user only, so don't complain about ALLUSERS problems -->
   </PropertyGroup>
   <PropertyGroup>
     <ProductVersion>3.7</ProductVersion>
@@ -9,7 +10,8 @@
     <DefineConstants>Debug;MSIProductVersion=$(MSIProductVersion)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <LinkerAdditionalOptions></LinkerAdditionalOptions>
+    <LinkerAdditionalOptions>
+    </LinkerAdditionalOptions>
     <DefineConstants>MSIProductVersion=$(MSIProductVersion)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
@@ -32,10 +34,28 @@
     <Content Include="Resources\Icon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="WixToolset.UI.wixext" Version="4.0.0" />
-    <PackageReference Include="WixToolset.NetFx.wixext" Version="4.0.0" />
+    <PackageReference Include="WixToolset.UI.wixext" Version="4.0.1" />
+    <PackageReference Include="WixToolset.NetFx.wixext" Version="4.0.1" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="EnglishLoc.wxl" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Generate-ExtrafilesWxs.ps1" />
+  </ItemGroup>
+  <!-- For the add-in output directory, we create a property and expose as a variable to WiX -->
+  <PropertyGroup>
+    <AddinPublishDir>$([System.IO.Path]::GetFullPath('$(SolutionDir)Test\bin\$(Configuration)\net472\publish'))</AddinPublishDir>
+    <DefineConstants>$(DefineConstants);AddinPublishDir=$(AddinPublishDir)</DefineConstants>
+    <ExtraFilesRegKeyBase>Software\MyCompany\MyProduct\ExtraFiles</ExtraFilesRegKeyBase>
+  </PropertyGroup>
+  <!-- Generate the .wxs -->
+  <Target Name="GenerateExtraFilesWxs" BeforeTargets="CoreCompile">
+    <Exec Command="powershell.exe -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\Generate-ExtraFilesWxs.ps1&quot; -PublishDir &quot;$(AddinPublishDir)&quot; -OutputWxs &quot;$(MSBuildProjectDirectory)\obj\ExtraFiles.wxs&quot; -RegKeyBase &quot;$(ExtraFilesRegKeyBase)&quot;" />
+  </Target>
+  <!-- Include the generated file for compilation -->
+  <ItemGroup>
+    <Compile Include="obj\ExtraFiles.wxs" />
+  </ItemGroup>
+
 </Project>

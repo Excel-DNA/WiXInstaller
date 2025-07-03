@@ -1,11 +1,28 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ExcelDna.AddIn" Version="1.7.0-rc3" />
+    <PackageReference Include="ExcelDna.AddIn" Version="1.8.0" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="ExtraFiles\GUI\GuiRibbon\AnotherFile.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="ExtraFiles\MoreExtraFiles\File3.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="ExtraFiles\MoreExtraFiles\File4.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <!--<Exec Command="xcopy /Y $(OutDir)File.txt $(OutDir)publish" />-->
+    <Exec Command="xcopy /E /I /Y $(OutDir)ExtraFiles\* $(OutDir)publish\ExtraFiles" />
+  </Target>
   
 </Project>

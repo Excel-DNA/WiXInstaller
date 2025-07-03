@@ -5,7 +5,7 @@
   <String Id="ProductDescription" Value="Installer for Test Excel Add-In" />
   <String Id="ProductManufacturer" Value="Excel-DNA" />
   <String Id="ProductVersion" Value="1" />
-  <String Id="ProductCopyright" Value="(c) 2023 Excel-DNA" />
-  <String Id="ProductUninstallDescription" Value="Uninstall !(loc.ProductName)" />
-  <String Id="AppName" Value="!(loc.ProductName)" />
+  <String Id="ProductCopyright" Value="(c) 2025 Excel-DNA" />
+  <String Id="ProductUninstallDescription" Value="Uninstall Test Excel Add-In" />
+  <String Id="AppName" Value="Test Add-In" />
 </WixLocalization>
