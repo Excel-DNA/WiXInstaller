@@ -1,5 +1,10 @@
 ﻿<Project Sdk="WixToolset.Sdk/4.0.1">
   <PropertyGroup>
+    <!-- The platform(s) below can be changed to "x64" or even "x86;x64;ARM64". 
+         It determines what bitness the installer has, affecting what versions of Windows it will work on.
+         Both an x86 and an x64 installer will install the right add-in (32-bit or 64-bit) according to the bitness of Excel.
+         But an x64 installer won't run on 32-bit Windows, so we use x86 here which can run everywhere.
+    -->
     <Platforms>x86</Platforms>
     <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
     <SuppressIces>ICE91</SuppressIces> <!-- We install per-user only, so don't complain about ALLUSERS problems -->

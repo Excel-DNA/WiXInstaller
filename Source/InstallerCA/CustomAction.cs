@@ -38,8 +38,8 @@ namespace InstallerCA
                 szFolder = session["AddinFolder"];
                 session.Log($"CaRegisterAddIn Args: OFFICEREGKEYS={szOfficeRegKeyVersions}, XLL32={szXll32Bit}, XLL64={szXll64Bit}, szFolder={szFolder}");
 
-                szXll32Bit = szFolder.ToString() + szXll32Bit.ToString();
-                szXll64Bit = szFolder.ToString() + szXll64Bit.ToString();
+                szXll32Bit = Path.Combine(szFolder, szXll32Bit);
+                szXll64Bit = Path.Combine(szFolder, szXll64Bit);
 
                 if (szOfficeRegKeyVersions.Length > 0)
                 {
@@ -158,10 +158,11 @@ namespace InstallerCA
                 szXll32Bit = session["XLL32"];
                 szXll64Bit = session["XLL64"];
                 szFolder = session["AddinFolder"];
-                session.Log($"CaUnRegisterAddIn Args: OFFICEREGKEYS={szOfficeRegKeyVersions}, XLL32={szXll32Bit}, XLL64={szXll64Bit}, szFolder={szFolder}");
+                session.Log($"CaUnRegisterAddIn AddInFolder={szFolder ?? "<null>"}");
+                session.Log($"CaUnRegisterAddIn Args: OFFICEREGKEYS={szOfficeRegKeyVersions ?? "<null>"}, XLL32={szXll32Bit ?? "<null>"}, XLL64={szXll64Bit ?? "<null>"}, szFolder={szFolder ?? "<null>"}");
 
-                szXll32Bit = szFolder.ToString() + szXll32Bit.ToString();
-                szXll64Bit = szFolder.ToString() + szXll64Bit.ToString();
+                szXll32Bit = Path.Combine(szFolder, szXll32Bit);
+                szXll64Bit = Path.Combine(szFolder, szXll64Bit);
 
 
 		        if (szOfficeRegKeyVersions.Length > 0)
@@ -182,34 +183,39 @@ namespace InstallerCA
 
                             var szValueNames = rkAddInKey.GetValueNames();
                             var allOpenKeyValues = new List<string>();
+
                             foreach (string szValueName in szValueNames)
                             {
-                                //unregister both 32 and 64 xll
-                                if (szValueName.StartsWith("OPEN") && (rkAddInKey.GetValue(szValueName).ToString().Contains(szXll32Bit) || rkAddInKey.GetValue(szValueName).ToString().Contains(szXll64Bit)))
+                                if (!szValueName.StartsWith("OPEN")) continue;
+
+                                string openValue = rkAddInKey.GetValue(szValueName)?.ToString() ?? "";
+
+                                bool matchXll32 = !string.IsNullOrEmpty(szXll32Bit) && openValue.Contains(szXll32Bit);
+                                bool matchXll64 = !string.IsNullOrEmpty(szXll64Bit) && openValue.Contains(szXll64Bit);
+
+                                if (matchXll32 || matchXll64)
                                 {
-                                    //Delete the current KEY
-                                    rkAddInKey.DeleteValue(szValueName);
+                                    session.Log($"Deleting registry value '{szValueName}' because matchXll32={matchXll32}, matchXll64={matchXll64}");
+                                    // Do not add to the list — so it’s dropped.
                                 }
-                                else if (szValueName.StartsWith("OPEN"))
+                                else
                                 {
-                                    //Collect all other OPEN KEYs that will need to be inserted back with adjusted OPEN counter
-                                    //Since we are going to preserve all in the allOpenKeyValues, we can delete the original once,
-                                    //so we can insert / create new with correc tcounters.
-                                    allOpenKeyValues.Add(rkAddInKey.GetValue(szValueName).ToString());
-                                    rkAddInKey.DeleteValue(szValueName);
+                                    session.Log($"Preserving OPEN value '{szValueName}' = '{openValue}'");
+                                    allOpenKeyValues.Add(openValue);
                                 }
+
+                                rkAddInKey.DeleteValue(szValueName);
                             }
 
-                            var i = 0;
-                            //Here all OPEN KEYs are GONE!!! Lets insert new once with correct OPEN counters
-                            foreach (var szValueName in allOpenKeyValues)
-                            {
-                                if (i > 0)
-                                    rkAddInKey.SetValue("OPEN" + i, szValueName);
-                                else
-                                    rkAddInKey.SetValue("OPEN", szValueName);
+                            session.Log($"Rewriting OPEN keys: {allOpenKeyValues.Count} remaining.");
 
-                                ++i;
+                            int i = 0;
+                            foreach (var openValue in allOpenKeyValues)
+                            {
+                                string keyName = i == 0 ? "OPEN" : $"OPEN{i}";
+                                session.Log($"Rewriting {keyName} = '{openValue}'");
+                                rkAddInKey.SetValue(keyName, openValue);
+                                i++;
                             }
                         }
                     }
@@ -219,7 +225,7 @@ namespace InstallerCA
             }
             catch (Exception ex)
             {
-                session.Log(ex.Message);
+                session.Log($"CaUnRegisterAddIn Exception: {ex.Message}");
             }
 
             return bFoundOffice ? ActionResult.Success : ActionResult.Failure;
